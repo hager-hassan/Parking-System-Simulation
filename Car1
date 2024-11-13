@@ -1,0 +1,56 @@
+package org.os;
+
+public class Car1 implements Runnable {
+
+        private int id;
+        private int gate;
+        private  int arrivalTime;
+        private int parkingDuration;
+        private ParkingLot parkingLot;
+
+        public Car1(int id, int gate, int arrivalTime, int parkingDuration, ParkingLot parkingLot) {
+            this.id = id;
+            this.gate = gate;
+            this.arrivalTime = arrivalTime;
+            this.parkingDuration = parkingDuration;
+            this.parkingLot = parkingLot;
+        }
+
+
+@Override
+public void run() {
+    try {
+        Thread.sleep(arrivalTime * 1000L);  // Simulate arrival delay
+        System.out.println("Car " + id + " from Gate " + gate + " arrived at time " + arrivalTime);
+
+        boolean parked = false;
+        int waitingTime = 0;  // 3lashan 23raf fadel mstani ad eh
+
+        while (!parked) {
+            if (parkingLot.parking(id, gate)) {
+                // Successfully parked
+                if (waitingTime > 0) {
+                    System.out.println("Car " + id + " from Gate " + gate + " parked after waiting for "
+                            + waitingTime + " units of time. (Parking Status: " + parkingLot.getOccupiedSpots() + " spots occupied)");
+                } else {
+                    System.out.println("Car " + id + " from Gate " + gate + " parked. (Parking Status: " + parkingLot.getOccupiedSpots() + " spots occupied)");
+                }
+
+                // Simulate parking duration
+                Thread.sleep(parkingDuration * 1000L);
+                parkingLot.leaving(id, gate);
+                parked = true;  // Exit the loop as parking was successful
+            } else {
+                // No spot available, wait and try again
+                System.out.println("Car " + id + " from Gate " + gate + " waiting for a spot.");
+                Thread.sleep(500);  // Wait 0.5 seconds before retrying
+                waitingTime += 1;  // Increment waiting time by 1 unit (500ms counts as 1 unit here)
+            }
+        }
+    } catch (InterruptedException e) {
+        System.out.println("Car " + id + " from Gate " + gate + " interrupted while waiting.");
+        Thread.currentThread().interrupt();  // Restore interrupted status
+    }
+}
+
+}
