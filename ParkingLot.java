@@ -1,4 +1,4 @@
-package org.example;
+package org.os;
 import java.lang.InterruptedException;
 
 // responsible for managing the available parking spaces using Semaphore,
@@ -19,24 +19,27 @@ public class ParkingLot {
         this.availableSpots = new Semaphore(numberOfSpots); // ba initialize el semaphore be 3dd el spots el mota7a
     }
 
-    public synchronized void parking(String carId, String gate){
+    public synchronized boolean parking(int carId, int gate){
 
         try{
             availableSpots.acquire(); // b7awl a5d mkan fe el parking
             occupiedSpots++; // increase 3dd el spots el m48ola
 
-            System.out.println(carId + " from " + gate + " parked. (Parking Status: " + occupiedSpots + " spots occupied)");
+          //  System.out.println(carId + " from " + gate + " parked. (Parking Status: " + occupiedSpots + " spots occupied)");
+            return true;
         }
         catch (InterruptedException e){
             System.out.println("\033[0;31m" + carId + " interrupted while waiting for a parking spot.\033[0m");
+            return false;
         }
+
     }
 
-    public synchronized void leaving(String carId, String gate){
+    public synchronized void leaving(int carId, int gate){
 
         availableSpots.release(); // lma car tm4y hnfdy mkan fe el parking
         occupiedSpots--; // decrease 3dd el amaken el m48ola
-        System.out.println(carId + " from " + gate + " left after " + (occupiedSpots + 1) + " units of time. (Parking Status: " + occupiedSpots + " spots occupied)");
+       // System.out.println(carId + " from " + gate + " left after " + (occupiedSpots + 1) + " units of time. (Parking Status: " + occupiedSpots + " spots occupied)");
     }
 
     public int getOccupiedSpots() {
