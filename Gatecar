@@ -1,5 +1,7 @@
 package org.os;
+
 import java.util.concurrent.Semaphore;
+import java.util.List;
 
 
 public class Gate implements Runnable {
@@ -26,21 +28,28 @@ public class Gate implements Runnable {
     @Override
     public void run() {
         for (Car car : carSchedule) {
-            String carId = car.getCarId();
-            int arriveTime = car.getArrivalTime();
-            int parkDuration = car.getParkingDuration();
+//            String carId = car[0];
+//            int arriveTime = Integer.parseInt(car[1]);
+//            int parkDuration = Integer.parseInt(car[2]);
 
             try {
-                Thread.sleep(arriveTime * 1000L); //pause a second then dakhal el ba3do
+                int arrivalTime = car.arrivalTime;
+                int carId = car.id; // khaleto public
+                int parkDuration = car.parkingDuration;
+                Thread.sleep(arrivalTime * 1000L); //pause a second then dakhal el ba3do
 
                 gateSemaphore.acquire(); // One car enters gate at a time
                 System.out.println(carId + " is passing through " + gateNumber);
 
-                parkingLot.parking(carId, gateNumber); // Try parking
-                Thread.sleep(parkDuration * 1000L); // Simulate parking duration
-                parkingLot.leaving(carId, gateNumber); // Leave parking
+                Thread carThread = new Thread(car);
+                carThread.start();
+                carThread.join();
+//                parkingLot.parking(carId, gateNumber); // Try parking
+//                Thread.sleep(parkDuration * 1000L); // Simulate parking duration
+//                parkingLot.leaving(carId, gateNumber); // Leave parking
 
             } catch (InterruptedException e) {
+                int carId = car.id; // khaleto public
                 Thread.currentThread().interrupt();
                 System.out.println("\033[0;31m" + carId + " interrupted at " + gateNumber + ".\033[0m");
             } finally {
